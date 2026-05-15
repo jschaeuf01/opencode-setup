@@ -9,7 +9,7 @@ Provide a one-command setup for OpenCode on a personal Mac, including:
 - Dev tool installation (Homebrew, git, jq, Node.js, Docker)
 - OpenCode installation and configuration
 - Superpowers plugin registration
-- Custom skill installation (security review, etc.)
+- Custom skill installation (security review, token efficiency)
 
 ## Repo Structure
 
@@ -17,6 +17,7 @@ Provide a one-command setup for OpenCode on a personal Mac, including:
 setup-opencode.sh                     # Main installer script (bash, macOS)
 skills/                               # Custom skills bundled with this repo
   secure-code-review/SKILL.md         # Security checklist for AI-generated code
+  token-efficiency/SKILL.md           # Cost control and token usage discipline
 README.md                             # User-facing documentation
 AGENTS.md                             # This file — agent instructions
 ```

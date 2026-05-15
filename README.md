@@ -157,6 +157,28 @@ Checks every piece of code for common security mistakes that AI tends to make, i
 - Weak encryption or authentication
 - And more (based on the [OWASP Top 10](https://owasp.org/www-project-top-ten/))
 
+**Token efficiency** (installed by this script):
+
+Keeps your API costs low by teaching OpenCode to:
+- Not re-read files it already has in context
+- Read only the lines it needs, not entire files
+- Give concise answers instead of long-winded explanations
+- Make multiple tool calls at once instead of one at a time
+- Stop exploring when it has enough information to act
+
+### Cost Control Settings
+
+The config includes several settings that reduce how many tokens (and dollars) OpenCode uses:
+
+| Setting | What it does | Why it saves money |
+|---------|-------------|-------------------|
+| `small_model` | Uses a cheap model for small tasks like naming sessions | You're not paying for Claude Opus to generate a title |
+| `compaction.auto` | Automatically summarizes long conversations | Prevents context from growing until it hits the limit and errors out |
+| `compaction.prune` | Removes old tool outputs | Frees up space without losing the important parts |
+| `share: disabled` | Disables session sharing | No extra API calls to upload conversations |
+
+**Tip:** You can also control costs from your provider's dashboard. Most providers let you set monthly spending limits (e.g., $10/month on Anthropic).
+
 ### Tool Integrations (MCP Servers)
 
 These give OpenCode the ability to search external resources:
@@ -214,8 +236,9 @@ bash setup-opencode.sh
 | File | What was added |
 |------|---------------|
 | `~/.zshrc` | Homebrew PATH, API key, `oc` shortcut |
-| `~/.config/opencode/opencode.jsonc` | OpenCode settings (MCP servers, plugins, permissions) |
+| `~/.config/opencode/opencode.jsonc` | OpenCode settings (MCP servers, plugins, permissions, cost controls) |
 | `~/.config/opencode/skills/secure-code-review/SKILL.md` | Security review skill |
+| `~/.config/opencode/skills/token-efficiency/SKILL.md` | Token efficiency skill |
 
 ---
 

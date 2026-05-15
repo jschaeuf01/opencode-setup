@@ -204,6 +204,23 @@ else
   // Disable session sharing by default
   "share": "disabled",
 
+  // Use a cheap model for lightweight tasks (title generation, etc.)
+  // This avoids burning expensive tokens on housekeeping.
+  // Change this to match your provider — examples:
+  //   "anthropic/claude-haiku-4-5"  (Anthropic)
+  //   "openai/gpt-4o-mini"          (OpenAI)
+  "small_model": "anthropic/claude-haiku-4-5",
+
+  // Compaction — controls how OpenCode manages long conversations
+  "compaction": {
+    // Automatically compact when context window fills up (saves tokens)
+    "auto": true,
+    // Remove old tool outputs to reclaim space
+    "prune": true,
+    // Reserve 10k tokens buffer for the compaction process itself
+    "reserved": 10000
+  },
+
   // Plugins — extends OpenCode with skills and integrations
   "plugin": [
     // Superpowers: a complete dev methodology with brainstorming, TDD,
@@ -425,6 +442,8 @@ echo ""
 echo "  What was configured:"
 echo "    - Superpowers plugin (brainstorming, TDD, debugging, code review...)"
 echo "    - Secure code review skill (security checklist for AI-generated code)"
+echo "    - Token efficiency skill (reduces API costs and verbosity)"
+echo "    - Cost-saving defaults (small model for housekeeping, auto-compaction)"
 echo "    - MCP servers: Context7 (docs), Grep (code search), Cloudflare Docs"
 echo "    - Safe permission defaults for git and shell commands"
 echo ""
