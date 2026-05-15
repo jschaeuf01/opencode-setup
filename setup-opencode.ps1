@@ -74,7 +74,9 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
     Write-Yellow "  Installing Git..."
     winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
     # Refresh PATH for current session
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
+    $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    $env:Path = "$machinePath;$userPath"
     if (Get-Command git -ErrorAction SilentlyContinue) {
         Write-Green "  [OK] Git installed."
     } else {
@@ -93,7 +95,9 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
 } else {
     Write-Yellow "  Installing Node.js..."
     winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements
-    $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+    $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
+    $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+    $env:Path = "$machinePath;$userPath"
     if (Get-Command node -ErrorAction SilentlyContinue) {
         Write-Green "  [OK] Node.js installed."
     } else {
@@ -111,7 +115,7 @@ if (Get-Command docker -ErrorAction SilentlyContinue) {
     Write-Green "  [OK] Docker already installed."
 } else {
     Write-Yellow "  Installing Docker Desktop..."
-    Write-Host "  (This may take a few minutes)"
+    Write-Host '  (This may take a few minutes)'
     winget install --id Docker.DockerDesktop -e --source winget --accept-package-agreements --accept-source-agreements
     Write-Green "  [OK] Docker Desktop installed."
     Write-Yellow "  NOTE: You may need to restart your computer and then open Docker Desktop to finish setup."
@@ -130,7 +134,9 @@ if (Get-Command opencode -ErrorAction SilentlyContinue) {
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         npm install -g opencode-ai 2>$null
         # Refresh PATH
-        $env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path", "User")
+        $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
+        $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
+        $env:Path = "$machinePath;$userPath"
         if (Get-Command opencode -ErrorAction SilentlyContinue) {
             Write-Green "  [OK] OpenCode installed."
         } else {
@@ -155,7 +161,7 @@ if (-not (Test-Path $ConfigDir)) {
 
 if (Test-Path $ConfigFile) {
     Write-Green "  [OK] Config already exists at $ConfigFile, skipping."
-    Write-Host "  (Delete it and re-run to regenerate.)"
+    Write-Host '  (Delete it and re-run to regenerate.)'
 } else {
     $ConfigContent = @'
 {
@@ -293,7 +299,7 @@ if (Test-Path $SkillsSrc) {
 # Step 8: API key + oc alias in PowerShell profile
 # -------------------------------------------
 Write-Host ""
-Write-Host "[8/8] Setting up LLM provider and 'oc' shortcut..."
+Write-Host '[8/8] Setting up LLM provider and oc shortcut...'
 
 # Ensure PowerShell profile exists
 $profileDir = Split-Path -Parent $Profile_
@@ -316,14 +322,14 @@ if ($profileContent -match "ANTHROPIC_API_KEY|OPENAI_API_KEY|OPENROUTER_API_KEY"
 if (-not $apiKeySet) {
     Write-Host ""
     Write-Host "  OpenCode needs an API key from an LLM provider."
-    Write-Host "  Recommended: Anthropic (Claude) -- https://console.anthropic.com/"
+    Write-Host '  Recommended: Anthropic (Claude) -- https://console.anthropic.com/'
     Write-Host "  Alternatives: OpenAI, OpenRouter, or use /connect in OpenCode later."
     Write-Host ""
-    Write-Host "  Which provider?"
-    Write-Host "    1) Anthropic (Claude) -- recommended"
-    Write-Host "    2) OpenAI (GPT)"
-    Write-Host "    3) OpenRouter (multi-provider)"
-    Write-Host "    s) Skip -- I'll set it up later"
+    Write-Host '  Which provider?'
+    Write-Host '    1) Anthropic (Claude) -- recommended'
+    Write-Host '    2) OpenAI (GPT)'
+    Write-Host '    3) OpenRouter (multi-provider)'
+    Write-Host '    s) Skip -- I will set it up later'
     Write-Host ""
     $choice = Read-Host "  Choose [1/2/3/s]"
 
@@ -379,29 +385,29 @@ Write-Host "========================================"
 Write-Green "  Setup complete!"
 Write-Host "========================================"
 Write-Host ""
-Write-Host "  What was installed:"
-Write-Host "    - Git, Node.js (dev tools)"
-Write-Host "    - Docker Desktop (containers)"
-Write-Host "    - OpenCode (AI coding agent)"
-Write-Host ""
-Write-Host "  What was configured:"
-Write-Host "    - Superpowers plugin (brainstorming, TDD, debugging, code review...)"
-Write-Host "    - Secure code review skill (security checklist for AI-generated code)"
-Write-Host "    - Token efficiency skill (reduces API costs and verbosity)"
-Write-Host "    - Cost-saving defaults (small model for housekeeping, auto-compaction)"
-Write-Host "    - MCP servers: Context7 (docs), Grep (code search), Cloudflare Docs"
-Write-Host "    - Safe permission defaults for git and shell commands"
-Write-Host ""
-Write-Host "  Next steps:"
-Write-Host "    1. Close and reopen PowerShell"
-Write-Host "    2. Type 'oc' to launch OpenCode"
-Write-Host "    3. If you skipped the API key step, run /connect inside OpenCode"
-Write-Host ""
-Write-Host "  Useful commands inside OpenCode:"
-Write-Host "    /connect    -- set up or change your LLM provider"
-Write-Host "    /models     -- switch between AI models"
-Write-Host "    /init       -- analyze a project and create AGENTS.md"
-Write-Host "    /help       -- see all commands"
+Write-Host '  What was installed:'
+Write-Host '    - Git, Node.js (dev tools)'
+Write-Host '    - Docker Desktop (containers)'
+Write-Host '    - OpenCode (AI coding agent)'
+Write-Host ''
+Write-Host '  What was configured:'
+Write-Host '    - Superpowers plugin (brainstorming, TDD, debugging, code review...)'
+Write-Host '    - Secure code review skill (security checklist for AI-generated code)'
+Write-Host '    - Token efficiency skill (reduces API costs and verbosity)'
+Write-Host '    - Cost-saving defaults (small model for housekeeping, auto-compaction)'
+Write-Host '    - MCP servers: Context7 (docs), Grep (code search), Cloudflare Docs'
+Write-Host '    - Safe permission defaults for git and shell commands'
+Write-Host ''
+Write-Host '  Next steps:'
+Write-Host '    1. Close and reopen PowerShell'
+Write-Host '    2. Type oc to launch OpenCode'
+Write-Host '    3. If you skipped the API key step, run /connect inside OpenCode'
+Write-Host ''
+Write-Host '  Useful commands inside OpenCode:'
+Write-Host '    /connect    -- set up or change your LLM provider'
+Write-Host '    /models     -- switch between AI models'
+Write-Host '    /init       -- analyze a project and create AGENTS.md'
+Write-Host '    /help       -- see all commands'
 Write-Host ""
 Write-Host "  Docs: https://opencode.ai/docs"
 Write-Host ""
