@@ -204,6 +204,9 @@ else
   // Disable session sharing by default
   "share": "disabled",
 
+  // Automatically download OpenCode updates on launch
+  "autoupdate": true,
+
   // Use a cheap model for lightweight tasks (title generation, etc.)
   // This avoids burning expensive tokens on housekeeping.
   // Change this to match your provider — examples:

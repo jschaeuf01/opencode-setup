@@ -273,6 +273,7 @@ The config includes several settings that reduce how many tokens (and dollars) O
 | `compaction.auto` | Automatically summarizes long conversations | Prevents context from growing until it hits the limit and errors out |
 | `compaction.prune` | Removes old tool outputs | Frees up space without losing the important parts |
 | `share: disabled` | Disables session sharing | No extra API calls to upload conversations |
+| `autoupdate: true` | Updates OpenCode on launch | Keeps you on the latest (most efficient) version |
 
 **Tip:** You can also control costs from your provider's dashboard. Most providers let you set monthly spending limits (e.g., $10/month on Anthropic).
 
@@ -313,9 +314,29 @@ You can change these settings anytime by editing `~/.config/opencode/opencode.js
 
 ---
 
-## Re-running the Script
+## Keeping OpenCode Updated
 
-Both scripts are safe to re-run at any time. They skip anything already installed and update bundled skills to the latest version.
+OpenCode **updates itself automatically** every time you launch it. You don't need to do anything — when a new version is available, it downloads and installs it in the background before your session starts.
+
+This is controlled by the `autoupdate` setting in your config (enabled by default in this setup).
+
+If you ever want to update manually or check your version:
+
+| What | Mac | Windows |
+|------|-----|---------|
+| Check version | `opencode --version` | `opencode --version` |
+| Manual update (Homebrew) | `brew upgrade opencode` | — |
+| Manual update (npm) | `npm update -g opencode-ai` | `npm update -g opencode-ai` |
+| Disable auto-update | Set `"autoupdate": false` in `~/.config/opencode/opencode.jsonc` | Same |
+| Get notified only | Set `"autoupdate": "notify"` | Same |
+
+> **Note:** If you installed via Homebrew (Mac), the built-in autoupdate may defer to Homebrew's update mechanism. Running `brew upgrade opencode` is the most reliable way to update on Mac.
+
+---
+
+## Re-running the Setup Script
+
+The setup script is separate from OpenCode's autoupdate — re-running the script updates the **bundled skills** (security review, token efficiency) and installs any new tools added to the script. It won't touch your existing config or API keys.
 
 **Mac:**
 ```bash

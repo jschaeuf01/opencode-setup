@@ -161,6 +161,7 @@ if (Test-Path $ConfigFile) {
 {
   "$schema": "https://opencode.ai/config.json",
   "share": "disabled",
+  "autoupdate": true,
 
   "small_model": "anthropic/claude-haiku-4-5",
 
