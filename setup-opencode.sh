@@ -13,9 +13,10 @@
 #   - Git, jq, Node.js (dev essentials)
 #   - Docker Desktop (local containers)
 #   - OpenCode CLI (AI coding agent)
+#   - Superpowers skills plugin (brainstorming, TDD, debugging, etc.)
 #
 # What gets configured:
-#   - ~/.config/opencode/opencode.jsonc (MCP servers + permissions)
+#   - ~/.config/opencode/opencode.jsonc (MCP servers, plugins, permissions)
 #   - ~/.zshrc (PATH, API key env var, 'oc' launcher function)
 #
 
@@ -64,7 +65,7 @@ touch "$ZSHRC"
 # -------------------------------------------
 # Step 1: Install Homebrew (if needed)
 # -------------------------------------------
-echo "[1/7] Checking Homebrew..."
+echo "[1/8] Checking Homebrew..."
 
 if command -v brew &>/dev/null; then
   green_echo "  [OK] Homebrew already installed."
@@ -113,7 +114,7 @@ fi
 # Step 2: Install dev tools (git, jq, node)
 # -------------------------------------------
 echo ""
-echo "[2/7] Checking dev tools..."
+echo "[2/8] Checking dev tools..."
 
 install_brew_pkg() {
   local pkg="$1"
@@ -142,7 +143,7 @@ fi
 # Step 3: Install Docker Desktop (if needed)
 # -------------------------------------------
 echo ""
-echo "[3/7] Checking Docker..."
+echo "[3/8] Checking Docker..."
 
 if command -v docker &>/dev/null || [ -d "/Applications/Docker.app" ]; then
   green_echo "  [OK] Docker Desktop already installed."
@@ -162,7 +163,7 @@ fi
 # Step 4: Install OpenCode (if needed)
 # -------------------------------------------
 echo ""
-echo "[4/7] Checking OpenCode..."
+echo "[4/8] Checking OpenCode..."
 
 if command -v opencode &>/dev/null; then
   green_echo "  [OK] OpenCode already installed ($(opencode --version 2>/dev/null || echo 'version unknown'))."
@@ -189,7 +190,7 @@ fi
 # Step 5: Write OpenCode config
 # -------------------------------------------
 echo ""
-echo "[5/7] Configuring OpenCode..."
+echo "[5/8] Configuring OpenCode..."
 
 mkdir -p "$CONFIG_DIR"
 
@@ -202,6 +203,14 @@ else
   "$schema": "https://opencode.ai/config.json",
   // Disable session sharing by default
   "share": "disabled",
+
+  // Plugins — extends OpenCode with skills and integrations
+  "plugin": [
+    // Superpowers: a complete dev methodology with brainstorming, TDD,
+    // systematic debugging, code review, parallel agents, and more.
+    // https://github.com/obra/superpowers
+    "superpowers@git+https://github.com/obra/superpowers.git"
+  ],
 
   // MCP servers — external tool integrations
   "mcp": {
@@ -281,10 +290,47 @@ OCEOF
 fi
 
 # -------------------------------------------
-# Step 6: API key setup
+# Step 6: Install skills
 # -------------------------------------------
 echo ""
-echo "[6/7] Setting up LLM provider..."
+echo "[6/8] Setting up skills..."
+
+# --- Superpowers plugin (via opencode.jsonc) ---
+if grep -q "superpowers" "$CONFIG_FILE" 2>/dev/null; then
+  green_echo "  [OK] Superpowers plugin configured (auto-installs on first launch)."
+  echo "  Includes: brainstorming, TDD, systematic-debugging, writing-plans,"
+  echo "  executing-plans, code-review, parallel-agents, verification."
+else
+  yellow_echo "  [WARN] Superpowers not found in config."
+  echo "  You can add it manually to opencode.jsonc:"
+  echo '  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git"]'
+fi
+
+# --- Custom skills (bundled with this repo) ---
+SKILLS_SRC_DIR="$(cd "$(dirname "$0")" && pwd)/skills"
+SKILLS_DST_DIR="$CONFIG_DIR/skills"
+
+if [ -d "$SKILLS_SRC_DIR" ]; then
+  mkdir -p "$SKILLS_DST_DIR"
+  for skill_dir in "$SKILLS_SRC_DIR"/*/; do
+    skill_name="$(basename "$skill_dir")"
+    dst="$SKILLS_DST_DIR/$skill_name"
+    if [ -f "$skill_dir/SKILL.md" ]; then
+      mkdir -p "$dst"
+      cp "$skill_dir/SKILL.md" "$dst/SKILL.md"
+      green_echo "  [OK] Installed skill: $skill_name"
+    fi
+  done
+else
+  yellow_echo "  [INFO] No bundled skills directory found (running from curl?)."
+  echo "  To install custom skills, clone the repo and re-run the script."
+fi
+
+# -------------------------------------------
+# Step 7: API key setup
+# -------------------------------------------
+echo ""
+echo "[7/8] Setting up LLM provider..."
 
 API_KEY_SET=false
 
@@ -341,10 +387,10 @@ if [ "$API_KEY_SET" = false ]; then
 fi
 
 # -------------------------------------------
-# Step 7: Add 'oc' launcher to .zshrc
+# Step 8: Add 'oc' launcher to .zshrc
 # -------------------------------------------
 echo ""
-echo "[7/7] Setting up 'oc' launcher..."
+echo "[8/8] Setting up 'oc' launcher..."
 
 # Remove old version if present, then add current
 if grep -q '# --- OpenCode launcher' "$ZSHRC" 2>/dev/null; then
@@ -377,6 +423,8 @@ echo "    - Docker Desktop (containers)"
 echo "    - OpenCode (AI coding agent)"
 echo ""
 echo "  What was configured:"
+echo "    - Superpowers plugin (brainstorming, TDD, debugging, code review...)"
+echo "    - Secure code review skill (security checklist for AI-generated code)"
 echo "    - MCP servers: Context7 (docs), Grep (code search), Cloudflare Docs"
 echo "    - Safe permission defaults for git and shell commands"
 echo ""
