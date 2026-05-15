@@ -47,16 +47,16 @@ $SkillsSrc = Join-Path $ScriptDir "skills"
 # -------------------------------------------
 Write-Host ""
 Write-Host "========================================"
-Write-Green "  OpenCode Setup — Personal Edition (Windows)"
+Write-Green '  OpenCode Setup -- Personal Edition (Windows)'
 Write-Host "========================================"
 Write-Host ""
 
 # Check for winget
 Write-Host "[1/8] Checking package manager..."
 if (Get-Command winget -ErrorAction SilentlyContinue) {
-    Write-Green "  [OK] winget is available."
+    Write-Green '  [OK] winget is available.'
 } else {
-    Write-Red "  [FAIL] winget not found."
+    Write-Red '  [FAIL] winget not found.'
     Write-Host "  winget comes with App Installer from the Microsoft Store."
     Write-Host "  Install it from: https://aka.ms/getwinget"
     exit 1
@@ -69,18 +69,18 @@ Write-Host ""
 Write-Host "[2/8] Checking Git..."
 
 if (Get-Command git -ErrorAction SilentlyContinue) {
-    Write-Green "  [OK] Git already installed."
+    Write-Green '  [OK] Git already installed.'
 } else {
-    Write-Yellow "  Installing Git..."
+    Write-Yellow '  Installing Git...'
     winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
     # Refresh PATH for current session
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
     $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
-    $env:Path = "$machinePath;$userPath"
+    $env:Path = $machinePath + ';' + $userPath
     if (Get-Command git -ErrorAction SilentlyContinue) {
-        Write-Green "  [OK] Git installed."
+        Write-Green '  [OK] Git installed.'
     } else {
-        Write-Yellow "  [WARN] Git installed but not in PATH yet. You may need to restart PowerShell."
+        Write-Yellow '  [WARN] Git installed but not in PATH yet. You may need to restart PowerShell.'
     }
 }
 
@@ -91,17 +91,18 @@ Write-Host ""
 Write-Host "[3/8] Checking Node.js..."
 
 if (Get-Command node -ErrorAction SilentlyContinue) {
-    Write-Green "  [OK] Node.js already installed ($(node --version))."
+    $nodeVer = node --version
+    Write-Green ('  [OK] Node.js already installed (' + $nodeVer + ').')
 } else {
-    Write-Yellow "  Installing Node.js..."
+    Write-Yellow '  Installing Node.js...'
     winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
     $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
-    $env:Path = "$machinePath;$userPath"
+    $env:Path = $machinePath + ';' + $userPath
     if (Get-Command node -ErrorAction SilentlyContinue) {
-        Write-Green "  [OK] Node.js installed."
+        Write-Green '  [OK] Node.js installed.'
     } else {
-        Write-Yellow "  [WARN] Node.js installed but not in PATH yet. You may need to restart PowerShell."
+        Write-Yellow '  [WARN] Node.js installed but not in PATH yet. You may need to restart PowerShell.'
     }
 }
 
@@ -112,13 +113,13 @@ Write-Host ""
 Write-Host "[4/8] Checking Docker..."
 
 if (Get-Command docker -ErrorAction SilentlyContinue) {
-    Write-Green "  [OK] Docker already installed."
+    Write-Green '  [OK] Docker already installed.'
 } else {
-    Write-Yellow "  Installing Docker Desktop..."
+    Write-Yellow '  Installing Docker Desktop...'
     Write-Host '  (This may take a few minutes)'
     winget install --id Docker.DockerDesktop -e --source winget --accept-package-agreements --accept-source-agreements
-    Write-Green "  [OK] Docker Desktop installed."
-    Write-Yellow "  NOTE: You may need to restart your computer and then open Docker Desktop to finish setup."
+    Write-Green '  [OK] Docker Desktop installed.'
+    Write-Yellow '  NOTE: You may need to restart your computer and then open Docker Desktop to finish setup.'
 }
 
 # -------------------------------------------
@@ -128,23 +129,23 @@ Write-Host ""
 Write-Host "[5/8] Checking OpenCode..."
 
 if (Get-Command opencode -ErrorAction SilentlyContinue) {
-    Write-Green "  [OK] OpenCode already installed."
+    Write-Green '  [OK] OpenCode already installed.'
 } else {
-    Write-Yellow "  Installing OpenCode via npm..."
+    Write-Yellow '  Installing OpenCode via npm...'
     if (Get-Command npm -ErrorAction SilentlyContinue) {
         npm install -g opencode-ai 2>$null
         # Refresh PATH
         $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
         $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
-        $env:Path = "$machinePath;$userPath"
+        $env:Path = $machinePath + ';' + $userPath
         if (Get-Command opencode -ErrorAction SilentlyContinue) {
-            Write-Green "  [OK] OpenCode installed."
+            Write-Green '  [OK] OpenCode installed.'
         } else {
-            Write-Red "  [FAIL] OpenCode installed via npm but not found in PATH."
+            Write-Red '  [FAIL] OpenCode installed via npm but not found in PATH.'
             Write-Host "  Try closing and reopening PowerShell, then run: opencode"
         }
     } else {
-        Write-Red "  [FAIL] npm not available. Node.js may need a PowerShell restart."
+        Write-Red '  [FAIL] npm not available. Node.js may need a PowerShell restart.'
         Write-Host "  After restarting PowerShell, run: npm install -g opencode-ai"
     }
 }
@@ -160,7 +161,7 @@ if (-not (Test-Path $ConfigDir)) {
 }
 
 if (Test-Path $ConfigFile) {
-    Write-Green "  [OK] Config already exists at $ConfigFile, skipping."
+    Write-Green ('  [OK] Config already exists at ' + $ConfigFile + ', skipping.')
     Write-Host '  (Delete it and re-run to regenerate.)'
 } else {
     $ConfigContent = @'
@@ -254,7 +255,7 @@ if (Test-Path $ConfigFile) {
 }
 '@
     Set-Content -Path $ConfigFile -Value $ConfigContent -Encoding UTF8
-    Write-Green "  [OK] Config written to $ConfigFile"
+    Write-Green ('  [OK] Config written to ' + $ConfigFile)
 }
 
 # -------------------------------------------
@@ -267,7 +268,7 @@ Write-Host "[7/8] Setting up skills..."
 if (Test-Path $ConfigFile) {
     $configText = Get-Content $ConfigFile -Raw
     if ($configText -match "superpowers") {
-        Write-Green "  [OK] Superpowers plugin configured (auto-installs on first launch)."
+        Write-Green '  [OK] Superpowers plugin configured (auto-installs on first launch).'
         Write-Host "  Includes: brainstorming, TDD, systematic-debugging, writing-plans,"
         Write-Host "  executing-plans, code-review, parallel-agents, verification."
     }
@@ -287,11 +288,11 @@ if (Test-Path $SkillsSrc) {
                 New-Item -ItemType Directory -Path $destDir -Force | Out-Null
             }
             Copy-Item -Path $skillFile -Destination (Join-Path $destDir "SKILL.md") -Force
-            Write-Green "  [OK] Installed skill: $($folder.Name)"
+            Write-Green ('  [OK] Installed skill: ' + $folder.Name)
         }
     }
 } else {
-    Write-Yellow "  [INFO] No bundled skills directory found."
+    Write-Yellow '  [INFO] No bundled skills directory found.'
     Write-Host "  To install custom skills, clone the repo and re-run the script."
 }
 
@@ -315,7 +316,7 @@ $profileContent = Get-Content $Profile_ -Raw -ErrorAction SilentlyContinue
 # Check for existing API key
 $apiKeySet = $false
 if ($profileContent -match "ANTHROPIC_API_KEY|OPENAI_API_KEY|OPENROUTER_API_KEY") {
-    Write-Green "  [OK] API key already configured in PowerShell profile."
+    Write-Green '  [OK] API key already configured in PowerShell profile.'
     $apiKeySet = $true
 }
 
@@ -339,7 +340,7 @@ if (-not $apiKeySet) {
             if ($apiKey) {
                 Add-Content -Path $Profile_ -Value "`n`$env:ANTHROPIC_API_KEY = `"$apiKey`""
                 $env:ANTHROPIC_API_KEY = $apiKey
-                Write-Green "  [OK] ANTHROPIC_API_KEY saved to PowerShell profile."
+                Write-Green '  [OK] ANTHROPIC_API_KEY saved to PowerShell profile.'
             }
         }
         "2" {
@@ -347,7 +348,7 @@ if (-not $apiKeySet) {
             if ($apiKey) {
                 Add-Content -Path $Profile_ -Value "`n`$env:OPENAI_API_KEY = `"$apiKey`""
                 $env:OPENAI_API_KEY = $apiKey
-                Write-Green "  [OK] OPENAI_API_KEY saved to PowerShell profile."
+                Write-Green '  [OK] OPENAI_API_KEY saved to PowerShell profile.'
             }
         }
         "3" {
@@ -355,11 +356,11 @@ if (-not $apiKeySet) {
             if ($apiKey) {
                 Add-Content -Path $Profile_ -Value "`n`$env:OPENROUTER_API_KEY = `"$apiKey`""
                 $env:OPENROUTER_API_KEY = $apiKey
-                Write-Green "  [OK] OPENROUTER_API_KEY saved to PowerShell profile."
+                Write-Green '  [OK] OPENROUTER_API_KEY saved to PowerShell profile.'
             }
         }
         default {
-            Write-Yellow "  Skipped. You can configure a provider later with /connect in OpenCode."
+            Write-Yellow '  Skipped. You can configure a provider later with /connect in OpenCode.'
         }
     }
 }
@@ -372,9 +373,9 @@ if ($profileContent -notmatch "# --- OpenCode launcher") {
 function oc { opencode @args }
 "@
     Add-Content -Path $Profile_ -Value $ocAlias
-    Write-Green "  [OK] 'oc' shortcut added to PowerShell profile."
+    Write-Green '  [OK] oc shortcut added to PowerShell profile.'
 } else {
-    Write-Green "  [OK] 'oc' shortcut already configured."
+    Write-Green '  [OK] oc shortcut already configured.'
 }
 
 # -------------------------------------------
@@ -382,7 +383,7 @@ function oc { opencode @args }
 # -------------------------------------------
 Write-Host ""
 Write-Host "========================================"
-Write-Green "  Setup complete!"
+Write-Green '  Setup complete!'
 Write-Host "========================================"
 Write-Host ""
 Write-Host '  What was installed:'
