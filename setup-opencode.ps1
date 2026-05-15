@@ -72,7 +72,10 @@ if (Get-Command git -ErrorAction SilentlyContinue) {
     Write-Green '  [OK] Git already installed.'
 } else {
     Write-Yellow '  Installing Git...'
-    winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements
+    $prevPref = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    winget install --id Git.Git -e --source winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-Host
+    $ErrorActionPreference = $prevPref
     # Refresh PATH for current session
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
     $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
@@ -95,7 +98,10 @@ if (Get-Command node -ErrorAction SilentlyContinue) {
     Write-Green ('  [OK] Node.js already installed (' + $nodeVer + ').')
 } else {
     Write-Yellow '  Installing Node.js...'
-    winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements
+    $prevPref = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    winget install --id OpenJS.NodeJS.LTS -e --source winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-Host
+    $ErrorActionPreference = $prevPref
     $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
     $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
     $env:Path = $machinePath + ';' + $userPath
@@ -117,7 +123,10 @@ if (Get-Command docker -ErrorAction SilentlyContinue) {
 } else {
     Write-Yellow '  Installing Docker Desktop...'
     Write-Host '  (This may take a few minutes)'
-    winget install --id Docker.DockerDesktop -e --source winget --accept-package-agreements --accept-source-agreements
+    $prevPref = $ErrorActionPreference
+    $ErrorActionPreference = 'Continue'
+    winget install --id Docker.DockerDesktop -e --source winget --accept-package-agreements --accept-source-agreements 2>&1 | Out-Host
+    $ErrorActionPreference = $prevPref
     Write-Green '  [OK] Docker Desktop installed.'
     Write-Yellow '  NOTE: You may need to restart your computer and then open Docker Desktop to finish setup.'
 }
@@ -133,7 +142,12 @@ if (Get-Command opencode -ErrorAction SilentlyContinue) {
 } else {
     Write-Yellow '  Installing OpenCode via npm...'
     if (Get-Command npm -ErrorAction SilentlyContinue) {
-        npm install -g opencode-ai 2>$null
+        # npm writes notices to stderr which PowerShell treats as errors.
+        # Temporarily relax error handling for this call.
+        $prevPref = $ErrorActionPreference
+        $ErrorActionPreference = 'Continue'
+        npm install -g opencode-ai 2>&1 | Out-Null
+        $ErrorActionPreference = $prevPref
         # Refresh PATH
         $machinePath = [System.Environment]::GetEnvironmentVariable('Path', 'Machine')
         $userPath = [System.Environment]::GetEnvironmentVariable('Path', 'User')
