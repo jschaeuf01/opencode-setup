@@ -1,19 +1,24 @@
-# OpenCode Setup for Mac
+# OpenCode Setup
 
-Set up [OpenCode](https://opencode.ai) on your Mac in about 5 minutes. OpenCode is a free, open source AI coding assistant that runs in your terminal. Think of it like ChatGPT, but it can read, write, and run your code directly.
+Set up [OpenCode](https://opencode.ai) on your Mac or Windows PC in about 5 minutes. OpenCode is a free, open source AI coding assistant that runs in your terminal. Think of it like ChatGPT, but it can read, write, and run your code directly.
 
-This script handles everything for you — just follow the steps below.
+This repo has scripts for both platforms — just follow the steps for yours below.
+
+- **Mac?** Jump to [Mac Setup](#mac-setup)
+- **Windows?** Jump to [Windows Setup](#windows-setup)
+
+> **What's an API key?** It's like a password that lets OpenCode talk to an AI service (like Claude or ChatGPT). You get one by creating a free account with a provider. Both scripts will walk you through this — you can also set it up later.
 
 ---
+
+# Mac Setup
 
 ## What You Need Before Starting
 
 - A Mac (any recent macOS version)
 - Your Mac login password (the script may ask for it once during setup)
 - An internet connection
-- An API key from an AI provider (the script will walk you through this — you can also set it up later)
-
-> **What's an API key?** It's like a password that lets OpenCode talk to an AI service (like Claude or ChatGPT). You get one by creating a free account with a provider. The script will help you with this.
+- An API key from an AI provider (optional — the script will help you set one up)
 
 ---
 
@@ -90,7 +95,99 @@ You should see the OpenCode interface appear. You're ready to go!
 
 ---
 
-## Using OpenCode — Quick Start
+# Windows Setup
+
+## What You Need Before Starting
+
+- Windows 10 or 11
+- An internet connection
+- **winget** (comes pre-installed on most Windows 10/11 PCs — if not, get it from the [Microsoft Store](https://aka.ms/getwinget))
+- An API key from an AI provider (optional — the script will help you set one up)
+
+## Installation — Step by Step
+
+### Step 1: Open PowerShell
+
+Press **Windows key**, type **PowerShell**, and click **Windows PowerShell**. A blue window with a blinking cursor will appear.
+
+> **Important:** Use regular PowerShell, not "Run as Administrator" (the script will ask for elevation only if needed).
+
+### Step 2: Allow scripts to run
+
+Copy and paste this into PowerShell and press **Enter**:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force
+```
+
+This allows PowerShell to run downloaded scripts. You only need to do this once.
+
+### Step 3: Download this setup
+
+```powershell
+git clone https://github.com/jschaeuf01/opencode-setup.git
+```
+
+> **If you see an error about `git`:** Install Git first by running `winget install Git.Git`, then close and reopen PowerShell, and try again.
+
+### Step 4: Go into the folder
+
+```powershell
+cd opencode-setup
+```
+
+### Step 5: Run the setup script
+
+```powershell
+.\setup-opencode.ps1
+```
+
+The script will now:
+1. Check that **winget** is available
+2. Install **Git** (if not already installed)
+3. Install **Node.js** (if not already installed)
+4. Install **Docker Desktop** (if not already installed)
+5. Install **OpenCode** via npm
+6. Write the configuration file with MCP servers and permissions
+7. Install the bundled skills (security review, token efficiency)
+8. Ask you to choose an AI provider (or skip for later)
+9. Add the `oc` shortcut to your PowerShell profile
+
+**This takes 3-10 minutes** depending on your internet speed.
+
+### Step 6: Set up your AI provider
+
+Same as Mac — the script will ask you to choose Anthropic, OpenAI, OpenRouter, or skip.
+
+### Step 7: Close and reopen PowerShell
+
+Close the current PowerShell window and open a new one so the new settings take effect.
+
+### Step 8: Launch OpenCode
+
+```powershell
+oc
+```
+
+You should see the OpenCode interface appear. You're ready to go!
+
+### Windows Troubleshooting
+
+| Problem | Fix |
+|---------|-----|
+| `oc: The term 'oc' is not recognized` | Close PowerShell completely and open a new one |
+| `winget: The term 'winget' is not recognized` | Install App Installer from the [Microsoft Store](https://aka.ms/getwinget) |
+| `scripts is disabled on this system` | Run: `Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned -Force` |
+| `opencode: The term 'opencode' is not recognized` | Close and reopen PowerShell, then run: `npm install -g opencode-ai` |
+| Docker isn't working | Open Docker Desktop from the Start menu to complete first-time setup. You may need to restart your PC. |
+| Node.js / npm not found after install | Close and reopen PowerShell — PATH updates require a new session |
+| Want to change AI provider | Run `/connect` inside OpenCode |
+
+---
+
+# Using OpenCode — Quick Start
+
+> This section applies to both Mac and Windows.
 
 Once OpenCode is running, you can just type what you want in plain English. Here are some things to try:
 
@@ -201,7 +298,7 @@ You can change these settings anytime by editing `~/.config/opencode/opencode.js
 
 ---
 
-## Troubleshooting
+## Mac Troubleshooting
 
 | Problem | Fix |
 |---------|-----|
@@ -218,27 +315,41 @@ You can change these settings anytime by editing `~/.config/opencode/opencode.js
 
 ## Re-running the Script
 
-The script is safe to re-run at any time. It will:
-- Skip anything already installed
-- Update the bundled skills to the latest version
-- Leave your existing config file untouched
+Both scripts are safe to re-run at any time. They skip anything already installed and update bundled skills to the latest version.
 
+**Mac:**
 ```bash
 cd opencode-setup
 git pull
 bash setup-opencode.sh
 ```
 
+**Windows:**
+```powershell
+cd opencode-setup
+git pull
+.\setup-opencode.ps1
+```
+
 ---
 
-## Files Changed on Your Mac
+## Files Changed on Your Computer
+
+**Mac:**
 
 | File | What was added |
 |------|---------------|
 | `~/.zshrc` | Homebrew PATH, API key, `oc` shortcut |
 | `~/.config/opencode/opencode.jsonc` | OpenCode settings (MCP servers, plugins, permissions, cost controls) |
-| `~/.config/opencode/skills/secure-code-review/SKILL.md` | Security review skill |
-| `~/.config/opencode/skills/token-efficiency/SKILL.md` | Token efficiency skill |
+| `~/.config/opencode/skills/*/SKILL.md` | Bundled skills (security review, token efficiency) |
+
+**Windows:**
+
+| File | What was added |
+|------|---------------|
+| PowerShell profile (`$PROFILE`) | API key, `oc` shortcut |
+| `~\.config\opencode\opencode.jsonc` | OpenCode settings (MCP servers, plugins, permissions, cost controls) |
+| `~\.config\opencode\skills\*\SKILL.md` | Bundled skills (security review, token efficiency) |
 
 ---
 
@@ -259,22 +370,32 @@ If you skipped the API key step during setup, here's how to set one up:
 2. Create an account and add a payment method
 3. Click **API Keys** in the left sidebar
 4. Click **Create Key**, give it a name, and copy the key
-5. Open Terminal and run:
-   ```bash
-   echo 'export ANTHROPIC_API_KEY="paste-your-key-here"' >> ~/.zshrc
-   ```
-6. Open a new Terminal window, then type `oc`
+5. Set the key:
+   - **Mac** — Open Terminal and run:
+     ```bash
+     echo 'export ANTHROPIC_API_KEY="paste-your-key-here"' >> ~/.zshrc
+     ```
+   - **Windows** — Open PowerShell and run:
+     ```powershell
+     Add-Content $PROFILE '$env:ANTHROPIC_API_KEY = "paste-your-key-here"'
+     ```
+6. Open a new Terminal/PowerShell window, then type `oc`
 
 ### Option C: OpenAI (GPT)
 
 1. Go to [platform.openai.com](https://platform.openai.com)
 2. Create an account and add a payment method
 3. Go to **API Keys** and create a new key
-4. Open Terminal and run:
-   ```bash
-   echo 'export OPENAI_API_KEY="paste-your-key-here"' >> ~/.zshrc
-   ```
-5. Open a new Terminal window, then type `oc`
+4. Set the key:
+   - **Mac** — Open Terminal and run:
+     ```bash
+     echo 'export OPENAI_API_KEY="paste-your-key-here"' >> ~/.zshrc
+     ```
+   - **Windows** — Open PowerShell and run:
+     ```powershell
+     Add-Content $PROFILE '$env:OPENAI_API_KEY = "paste-your-key-here"'
+     ```
+5. Open a new Terminal/PowerShell window, then type `oc`
 
 > **How much does it cost?** Most providers charge a few cents per conversation. A typical coding session costs $0.10–$1.00. You can set spending limits in your provider's dashboard.
 
